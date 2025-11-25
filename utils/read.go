@@ -20,14 +20,12 @@ func Read_to_matrix(day int, test bool) [][]string {
 	file, err := os.Open(path)
 
 	if err != nil {
-		fmt.Println(err)
-		panic("Cannot read file")
+		log.Fatalf("Cannot read file: %v", err)
 	}
 
 	defer file.Close()
 
 	reader := bufio.NewReader(file)
-	lineNum := 0
 	matrix := [][]string{}
 
 	for {
@@ -48,8 +46,6 @@ func Read_to_matrix(day int, test bool) [][]string {
 		if err == io.EOF {
 			break
 		}
-
-		lineNum++
 	}
 
 	return matrix
