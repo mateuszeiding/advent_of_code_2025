@@ -9,3 +9,9 @@ func Print_matrix(matrix [][]string) {
 		}
 	}
 }
+
+func Print_lines(arr []string) {
+	for _, i := range arr {
+		fmt.Print(i)
+	}
+}
