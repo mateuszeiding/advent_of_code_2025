@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-func Read_to_matrix(day int, test bool) [][]string {
-	file := open_file(day, test)
+func ReadToMatrix(day int, test bool) [][]string {
+	file := openFile(day, test)
 
 	defer file.Close()
 
@@ -40,8 +40,8 @@ func Read_to_matrix(day int, test bool) [][]string {
 	return matrix
 }
 
-func Read_lines(day int, test bool) []string {
-	file := open_file(day, test)
+func ReadLines(day int, test bool) []string {
+	file := openFile(day, test)
 
 	defer file.Close()
 
@@ -66,7 +66,7 @@ func Read_lines(day int, test bool) []string {
 	return arr
 }
 
-func open_file(day int, test bool) *os.File {
+func openFile(day int, test bool) *os.File {
 	path := fmt.Sprintf("%s%02d", "./inputs/day_", day)
 
 	if test {

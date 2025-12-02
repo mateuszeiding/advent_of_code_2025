@@ -7,14 +7,14 @@ import (
 	"strconv"
 )
 
-func Day_01_part_01() {
-	input := utils.Read_lines(1, false)
+func Day01Part01() {
+	input := utils.ReadLines(1, false)
 
 	pointer := 50
 	pass := 0
 
 	for _, line := range input {
-		rotation, times := split_rotation(line)
+		rotation, times := splitRotation(line)
 
 		var result int
 		if rotation == "R" {
@@ -38,14 +38,14 @@ func Day_01_part_01() {
 	fmt.Println(pass)
 }
 
-func Day_01_part_02() {
-	input := utils.Read_lines(1, false)
+func Day01Part02() {
+	input := utils.ReadLines(1, false)
 
 	pointer := 50
 	pass := 0
 
 	for _, line := range input {
-		rotation, times := split_rotation(line)
+		rotation, times := splitRotation(line)
 
 		if times >= 100 {
 			pass = pass + int(math.Floor(float64(times)/float64(100)))
@@ -82,7 +82,7 @@ func Day_01_part_02() {
 	fmt.Println(pass)
 }
 
-func split_rotation(line string) (string, int) {
+func splitRotation(line string) (string, int) {
 	rotation := line[0:1]
 	times, err := strconv.Atoi(line[1:])
 
