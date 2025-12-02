@@ -46,7 +46,7 @@ func Day02Part01() {
 }
 
 func Day02Part02() {
-	input := utils.ReadLines(2, true)
+	input := utils.ReadLines(2, false)
 	input = strings.Split(input[0], ",")
 
 	result := 0
@@ -54,54 +54,20 @@ func Day02Part02() {
 	for _, v := range input {
 		start, end := getIdStartAndEnd(v)
 
-		startLen := int(math.Log10(float64(start)))
-		endLen := int(math.Log10(float64(end)))
-
-		if startLen%2 == 0 && endLen%2 == 0 {
-			continue
-		}
-
 		for id := start; id <= end; id++ {
 			idLen := int(math.Log10(float64(id))) + 1
-			divisibleBy := []int{}
 
-			for num := 2; num <= idLen; num++ {
-				if idLen%num == 0 {
-					divisibleBy = append(divisibleBy, num)
-				}
-			}
+			divisibleBy := getDivisibleBy(idLen)
 
-			parts := []int{}
-			rest := id
 			for _, num := range divisibleBy {
-				for rest > 0 {
-					mathThingi := int(math.Pow(10, float64(num)))
-					if mathThingi == 1 {
-						mathThingi = 10
-					}
-					parts = append(parts, rest%mathThingi)
+				parts := splitBy(id, num)
 
-					rest = rest / mathThingi
-				}
-
-				rest = id
-
-				sequence := parts[0]
-				invalidId := false
-				for p := range parts {
-					if sequence != p {
-						invalidId = true
-					}
-				}
-
-				parts = []int{}
-				if invalidId {
+				if isIdInvalid(parts) {
 					result = result + id
 					break
 				}
 
 			}
-
 		}
 	}
 
@@ -123,4 +89,48 @@ func getIdStartAndEnd(val string) (int, int) {
 
 	return start, end
 
+}
+
+// Part 02
+func getDivisibleBy(idLen int) []int {
+	divisibleBy := []int{}
+
+	for num := 1; num <= idLen/2; num++ {
+		if idLen%num == 0 {
+			divisibleBy = append(divisibleBy, num)
+		}
+	}
+
+	return divisibleBy
+}
+
+func splitBy(id, by int) []int {
+	parts := []int{}
+	rest := id
+
+	for rest > 0 {
+		var mathThingi int
+		if mathThingi == 1 {
+			mathThingi = 10
+		} else {
+			mathThingi = int(math.Pow(10, float64(by)))
+		}
+
+		parts = append(parts, rest%mathThingi)
+
+		rest = rest / mathThingi
+	}
+
+	return parts
+}
+
+func isIdInvalid(parts []int) bool {
+	sequence := parts[0]
+	for _, p := range parts[1:] {
+		if p != sequence {
+			return false
+		}
+	}
+
+	return true
 }
