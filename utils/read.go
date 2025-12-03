@@ -24,6 +24,7 @@ func ReadToMatrix(day int, test bool) [][]string {
 			log.Fatalf("error reading file: %v", err)
 		}
 
+		line = strings.TrimSuffix(line, "\r\n")
 		row := []string{}
 
 		for _, ch := range line {
