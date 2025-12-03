@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"strconv"
+	"strings"
 )
 
 func Day03Part01() {
@@ -24,12 +25,35 @@ func Day03Part01() {
 	fmt.Println(result)
 }
 
+// 169181023305251
+// 169241478792898
+
 func Day03Part02() {
-	input := utils.ReadToMatrix(3, true)
+	input := utils.ReadToMatrix(3, false)
 
 	result := 0
 	for _, battery := range input {
+		batterySlice := battery
+
+		fmt.Println(strings.Join(battery, ""))
+		for len(batterySlice) > 12 {
+			batterySlice = buildJoltage(batterySlice)
+			// fmt.Printf("%v \n", batterySlice)
+			// fmt.Println(strings.Join(batterySlice, ""))
+		}
+
+		strNum := strings.Join(batterySlice, "")
+
+		num, err := strconv.Atoi(strNum)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(num)
+		fmt.Println()
+		result = result + num
 	}
+
+	fmt.Println(result)
 }
 
 // Part 01
@@ -52,4 +76,30 @@ func getCartesian(arr []string) []int {
 	}
 
 	return cartesain
+}
+
+// Part 02
+func buildJoltage(arr []string) []string {
+	biggestIndex := 0
+
+	for i, v := range arr[:len(arr)-12] {
+		if v > arr[biggestIndex] {
+			biggestIndex = i
+		}
+	}
+	// fmt.Printf("biggest i: %d \n", biggestIndex)
+
+	if biggestIndex != 0 {
+		return arr[biggestIndex:]
+	}
+
+	smallestIndex := 0
+
+	for i, digit := range arr {
+		if digit < arr[smallestIndex] {
+			smallestIndex = i
+		}
+	}
+
+	return append(arr[:smallestIndex], arr[smallestIndex+1:]...)
 }
