@@ -8,5 +8,6 @@ func main() {
 	// solutions.Day02Part01()
 	// solutions.Day02Part02()
 	// solutions.Day03Part01()
-	solutions.Day03Part02()
+	// solutions.Day03Part02()
+	solutions.Day04Part01()
 }

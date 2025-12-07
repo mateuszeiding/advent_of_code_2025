@@ -28,6 +28,8 @@ func Day03Part01() {
 // 169181023305251
 // 169241478792898
 // 171052033625939
+// 171120577466565
+// 171297027032466
 
 func Day03Part02() {
 	input := utils.ReadToMatrix(3, false)
@@ -42,7 +44,7 @@ func Day03Part02() {
 			batterySlice = buildJoltage(batterySlice, iter)
 			iter++
 			// fmt.Printf("%v \n", batterySlice)
-			fmt.Println(strings.Join(batterySlice, ""))
+			// fmt.Println(strings.Join(batterySlice, ""))
 		}
 
 		strNum := strings.Join(batterySlice, "")
@@ -84,15 +86,17 @@ func getCartesian(arr []string) []int {
 // Part 02
 func buildJoltage(arr []string, iter int) []string {
 	biggestIndex := iter
-	fmt.Printf("%d %d %d \n", len(arr), iter, 12+iter)
-	if len(arr)-(12+iter) > iter {
 
-		for i, v := range arr[iter : len(arr)-(12+iter)] {
+	// fmt.Printf("%d %d %d \n", len(arr), iter, len(arr[0:iter])+len(arr[0+iter:]))
+	if iter < len(arr) {
+		for i, v := range arr[iter:] {
+			if len(arr[0:iter])+len(arr[i+iter:]) < 12 {
+				break
+			}
 			if v > arr[biggestIndex] {
 				biggestIndex = i + iter
 			}
 		}
-		fmt.Printf("biggest i: %d %s \n", biggestIndex, arr[biggestIndex])
 
 		if iter == 0 {
 			return arr[biggestIndex:]
@@ -101,7 +105,6 @@ func buildJoltage(arr []string, iter int) []string {
 			return append(arr[0:iter], arr[biggestIndex:]...)
 		}
 	}
-
 	smallestIndex := 0
 
 	for i, digit := range arr {
