@@ -11,7 +11,7 @@ func PrintMatrix(matrix [][]string) {
 	}
 }
 
-func PrintLines(arr []string) {
+func PrintLines[T comparable](arr []T) {
 	for _, i := range arr {
 		fmt.Println(i)
 	}
