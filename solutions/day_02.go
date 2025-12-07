@@ -4,7 +4,6 @@ import (
 	"aoc/utils"
 	"fmt"
 	"math"
-	"strconv"
 	"strings"
 )
 
@@ -15,7 +14,7 @@ func Day02Part01() {
 	result := 0
 
 	for _, v := range input {
-		start, end := getIdStartAndEnd(v)
+		start, end := utils.GetStartAndEndOfRange(v)
 
 		startLen := int(math.Log10(float64(start)))
 		endLen := int(math.Log10(float64(end)))
@@ -52,7 +51,7 @@ func Day02Part02() {
 	result := 0
 
 	for _, v := range input {
-		start, end := getIdStartAndEnd(v)
+		start, end := utils.GetStartAndEndOfRange(v)
 
 		for id := start; id <= end; id++ {
 			idLen := int(math.Log10(float64(id))) + 1
@@ -72,23 +71,6 @@ func Day02Part02() {
 	}
 
 	fmt.Println(result)
-}
-
-func getIdStartAndEnd(val string) (int, int) {
-	idRange := strings.Split(val, "-")
-
-	start, err := strconv.Atoi(idRange[0])
-	if err != nil {
-		panic(err)
-	}
-
-	end, err := strconv.Atoi(idRange[1])
-	if err != nil {
-		panic(err)
-	}
-
-	return start, end
-
 }
 
 // Part 02

@@ -7,11 +7,12 @@ func PrintMatrix(matrix [][]string) {
 		for _, j := range i {
 			fmt.Print(j)
 		}
+		fmt.Print("\n")
 	}
 }
 
 func PrintLines(arr []string) {
 	for _, i := range arr {
-		fmt.Print(i)
+		fmt.Println(i)
 	}
 }
