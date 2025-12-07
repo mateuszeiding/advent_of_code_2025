@@ -51,3 +51,31 @@ func Day04Part01() {
 	fmt.Println(result)
 
 }
+
+func Day04Part02() {
+	var input Grid = utils.ReadToMatrix(4, false)
+	result := 0
+	repeatAddsResult := true
+
+	for repeatAddsResult {
+		repeatAddsResult = false
+
+		for y := range input {
+			for x := range input[0] {
+				if input[y][x] != "@" {
+					continue
+				}
+
+				if input.countAdjacent(y, x) < 4 {
+					result++
+					input[y][x] = "."
+
+					repeatAddsResult = true
+				}
+			}
+		}
+	}
+
+	fmt.Println(result)
+
+}
