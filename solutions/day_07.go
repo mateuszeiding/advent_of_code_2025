@@ -32,3 +32,31 @@ func Day07Part01() {
 
 	fmt.Println(splits)
 }
+
+func Day07Part02() {
+	input := utils.ReadToMatrix(7, false)
+
+	startIndex := utils.IndexOf(input[0], "S")
+	beamsXAxis := map[int]int{}
+	beamsXAxis[startIndex] = 1
+	splits := 1
+
+	for _, v := range input[1:] {
+		newAxis := map[int]int{}
+
+		for x, val := range beamsXAxis {
+			if v[x] == "." {
+				newAxis[x] += val
+			}
+			if v[x] == "^" {
+				splits += val
+				newAxis[x-1] += val
+				newAxis[x+1] += val
+			}
+		}
+
+		beamsXAxis = newAxis
+	}
+
+	fmt.Println(splits)
+}

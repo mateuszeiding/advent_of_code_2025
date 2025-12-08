@@ -3,9 +3,10 @@ package utils
 import "fmt"
 
 func PrintMatrix(matrix [][]string) {
-	for _, i := range matrix {
-		for _, j := range i {
-			fmt.Print(j)
+	for i, arr := range matrix {
+		fmt.Printf("%03d: ", i)
+		for _, v := range arr {
+			fmt.Print(v)
 		}
 		fmt.Print("\n")
 	}
