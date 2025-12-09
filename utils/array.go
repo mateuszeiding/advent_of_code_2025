@@ -21,3 +21,7 @@ func Dedup[T comparable](sliceList []T) []T {
 	}
 	return list
 }
+
+func RemoveIndex[T comparable](s []T, index int) []T {
+	return append(s[:index], s[index+1:]...)
+}
