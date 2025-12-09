@@ -17,16 +17,17 @@ type Coordinates struct {
 	z float64
 }
 
-type OtherBox struct {
+type DistanceTo struct {
 	id   uint32
-	ref  *Box
 	dist float64
 }
 
 type Box struct {
 	id        uint32
 	coord     Coordinates
-	distances []OtherBox
+	prev      *Box
+	next      *Box
+	distances []DistanceTo
 }
 
 func (b *Box) Compare(id uint32) bool {
@@ -35,79 +36,31 @@ func (b *Box) Compare(id uint32) bool {
 
 func Day08Part01() {
 	input := utils.ReadLines(8, true)
-	boxes := []Box{}
 
-	for _, l := range input {
-		coordinates := getCoordinates(l)
-
-		box := Box{
-			id: uuid.New().ID(),
-			coord: Coordinates{
-				x: coordinates[0],
-				y: coordinates[1],
-				z: coordinates[2],
-			},
-			distances: []OtherBox{},
-		}
-
-		boxes = append(boxes, box)
-	}
-
+	boxes := getBoxes(input)
 	boxes = calcDistancesForOther(boxes)
 
-	circutParts := []OtherBox{}
+	circutParts := []DistanceTo{}
 
 	for i := 0; i <= 10; {
 		i++
-		lowIdx := 0
+		lowKey := uint32(0)
 
 		for idx, b := range boxes {
-			if b.distances[0].dist < boxes[lowIdx].distances[0].dist {
-				lowIdx = idx
+			if lowKey == 0 {
+				lowKey = idx
+			}
+
+			if b.distances[0].dist < boxes[lowKey].distances[0].dist {
+				lowKey = idx
 			}
 		}
 
-		toUse := boxes[lowIdx].distances[0]
+		toUse := boxes[lowKey].distances[0]
+		fmt.Println(toUse)
 
-		circutParts = append(circutParts, toUse)
-
-		toUse.ref.distances = toUse.ref.distances[1:]
-		boxes[lowIdx].distances = boxes[lowIdx].distances[1:]
-
-		fId, sId := toUse.id, boxes[lowIdx].id
-
-		fCount := 0
-		for _, cp := range circutParts {
-			if cp.id == fId || cp.ref.id == fId {
-				fCount++
-			}
-		}
-
-		if fCount == 2 {
-			for i, v := range boxes {
-				if v.Compare(fId) {
-					boxes = append(boxes[:i], boxes[i+1:]...)
-				}
-			}
-
-		}
-
-		sCount := 0
-		for _, cp := range circutParts {
-			if cp.id == sId || cp.ref.id == sId {
-				sCount++
-			}
-		}
-
-		if sCount == 2 {
-			for i, v := range boxes {
-				if v.Compare(sId) {
-					boxes = append(boxes[:i], boxes[i+1:]...)
-				}
-			}
-
-		}
-
+		setNewDistances(boxes, lowKey, boxes[lowKey].distances[1:])
+		setNewDistances(boxes, toUse.id, boxes[toUse.id].distances[1:])
 	}
 
 	for _, cp := range circutParts {
@@ -133,31 +86,37 @@ func getCoordinates(str string) []float64 {
 	return coordinates
 }
 
-func calcDistancesForOther(boxes []Box) []Box {
-	for i, b := range boxes {
-		d := []OtherBox{}
+func calcDistancesForOther(boxes map[uint32]Box) map[uint32]Box {
+	for key, box := range boxes {
+		distances := []DistanceTo{}
 
-		for j, ib := range boxes {
-			if b.id == ib.id {
+		for _, nextBox := range boxes {
+			if box.id == nextBox.id {
 				continue
 			}
 
-			d = append(d, OtherBox{
-				id:   ib.id,
-				dist: calcDistance(b.coord.x, ib.coord.x, b.coord.y, ib.coord.y, b.coord.z, ib.coord.z),
-				ref:  &boxes[j],
+			distances = append(distances, DistanceTo{
+				id:   nextBox.id,
+				dist: calcDistance(box.coord.x, nextBox.coord.x, box.coord.y, nextBox.coord.y, box.coord.z, nextBox.coord.z),
 			})
 
 		}
 
-		sort.Slice(d, func(i, j int) bool {
-			return d[i].dist < d[j].dist
+		sort.Slice(distances, func(i, j int) bool {
+			return distances[i].dist < distances[j].dist
 		})
 
-		boxes[i].distances = d
+		setNewDistances(boxes, key, distances)
 	}
 
 	return boxes
+}
+
+func setNewDistances(boxes map[uint32]Box, key uint32, distances []DistanceTo) {
+	if entry, ok := boxes[key]; ok {
+		entry.distances = distances
+		boxes[key] = entry
+	}
 }
 
 func calcDistance(p1, q1, p2, q2, p3, q3 float64) float64 {
@@ -166,4 +125,28 @@ func calcDistance(p1, q1, p2, q2, p3, q3 float64) float64 {
 	distance := math.Sqrt(xPow + yPow + zPov)
 
 	return distance
+}
+
+func getBoxes(input []string) map[uint32]Box {
+	boxes := map[uint32]Box{}
+
+	for _, l := range input {
+		coordinates := getCoordinates(l)
+
+		box := Box{
+			id: uuid.New().ID(),
+			coord: Coordinates{
+				x: coordinates[0],
+				y: coordinates[1],
+				z: coordinates[2],
+			},
+			distances: []DistanceTo{},
+			prev:      nil,
+			next:      nil,
+		}
+
+		boxes[box.id] = box
+	}
+
+	return boxes
 }

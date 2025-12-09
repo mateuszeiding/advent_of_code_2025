@@ -14,10 +14,10 @@ func main() {
 	// solutions.Day05Part01()
 	// solutions.Day05Part02()
 	// solutions.Day06Part01()
-	solutions.Day06Part02()
+	// solutions.Day06Part02()
 	// solutions.Day07Part01()
 	// solutions.Day07Part02()
-	// solutions.Day08Part01()
+	solutions.Day08Part01()
 	// solutions.Day09Part01()
 	// solutions.Day09Part02()
 }
