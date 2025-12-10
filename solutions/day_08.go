@@ -40,33 +40,67 @@ func Day08Part01() {
 	boxes := getBoxes(input)
 	boxes = calcDistancesForOther(boxes)
 
-	circutParts := []DistanceTo{}
-
 	for i := 0; i <= 10; {
 		i++
-		lowKey := uint32(0)
-
-		for idx, b := range boxes {
-			if lowKey == 0 {
-				lowKey = idx
-			}
-
-			if b.distances[0].dist < boxes[lowKey].distances[0].dist {
-				lowKey = idx
-			}
-		}
+		lowKey := findKeyWithLowerDistance(boxes)
 
 		toUse := boxes[lowKey].distances[0]
-		fmt.Println(toUse)
+		// fmt.Println(boxes[lowKey].coord, boxes[toUse.id].coord, toUse.dist)
 
 		setNewDistances(boxes, lowKey, boxes[lowKey].distances[1:])
 		setNewDistances(boxes, toUse.id, boxes[toUse.id].distances[1:])
+
+		if boxes[lowKey].next != nil && boxes[lowKey].prev != nil {
+			continue
+		}
+		prev := boxes[lowKey].prev
+		next := boxes[lowKey].next
+		// fmt.Println(prev, next)
+
+		for next != nil {
+			if next.id == toUse.id {
+				continue
+			}
+			next = next.next
+		}
+		for prev != nil {
+			if prev.id == toUse.id {
+				continue
+			}
+
+			prev = prev.prev
+		}
+
+		if boxes[toUse.id].next != nil && boxes[toUse.id].prev != nil {
+			continue
+		}
+
+		fmt.Printf("Connect: %v to: %v \n", boxes[toUse.id].coord, boxes[lowKey].coord)
+
+		boxes[lowKey], boxes[toUse.id] = connectBoxes(boxes[lowKey], boxes[toUse.id])
 	}
 
-	for _, cp := range circutParts {
-
-		fmt.Printf("%v %f \n", cp.id, cp.dist)
+	circuts := []int{}
+	for _, cp := range boxes {
+		if cp.prev != nil {
+			continue
+		}
+		n := &cp
+		count := 1
+		for n != nil {
+			fmt.Printf("%v", n.coord)
+			count++
+			n = n.next
+		}
+		circuts = append(circuts, count)
+		fmt.Println("----")
 	}
+
+	sort.Slice(circuts, func(i, j int) bool {
+		return circuts[i] > circuts[j]
+	})
+
+	fmt.Println(circuts)
 }
 
 func getCoordinates(str string) []float64 {
@@ -110,6 +144,34 @@ func calcDistancesForOther(boxes map[uint32]Box) map[uint32]Box {
 	}
 
 	return boxes
+}
+
+func findKeyWithLowerDistance(boxes map[uint32]Box) uint32 {
+	lowKey := uint32(0)
+
+	for idx, b := range boxes {
+		if lowKey == 0 {
+			lowKey = idx
+		}
+
+		if b.distances[0].dist < boxes[lowKey].distances[0].dist {
+			lowKey = idx
+		}
+	}
+
+	return lowKey
+}
+
+func connectBoxes(curr, next Box) (Box, Box) {
+	if curr.next == nil {
+		curr.next = &next
+		next.prev = &curr
+	} else if curr.prev == nil {
+		curr.prev = &next
+		next.next = &curr
+	}
+
+	return curr, next
 }
 
 func setNewDistances(boxes map[uint32]Box, key uint32, distances []DistanceTo) {
