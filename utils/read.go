@@ -10,7 +10,7 @@ import (
 )
 
 func ReadToMatrix(day int, test bool) [][]string {
-	file := openFile(day, test)
+	file := openFile(day, test, false)
 
 	defer file.Close()
 
@@ -42,8 +42,18 @@ func ReadToMatrix(day int, test bool) [][]string {
 }
 
 func ReadLines(day int, test bool) []string {
-	file := openFile(day, test)
+	file := openFile(day, test, false)
 
+	return readLines(file)
+}
+
+func ReadLinesDiffPt2Test(day int, test bool) []string {
+	file := openFile(day, test, true)
+
+	return readLines(file)
+}
+
+func readLines(file *os.File) []string {
 	defer file.Close()
 
 	reader := bufio.NewReader(file)
@@ -67,10 +77,14 @@ func ReadLines(day int, test bool) []string {
 	return arr
 }
 
-func openFile(day int, test bool) *os.File {
+func openFile(day int, test bool, pt2 bool) *os.File {
 	path := fmt.Sprintf("%s%02d", "./inputs/day_", day)
 
 	if test {
+		if pt2 {
+			path = path + "_02"
+		}
+
 		path = path + ".test"
 	}
 
