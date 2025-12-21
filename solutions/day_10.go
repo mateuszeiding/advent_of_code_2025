@@ -81,3 +81,113 @@ func Day10Part01() {
 
 	fmt.Println(result)
 }
+
+type JoltageManual struct {
+	buttons [][]int
+	joltage [12]int
+}
+
+func (m *JoltageManual) readInputForJoltage(input []string) {
+	for _, val := range input[1 : len(input)-1] {
+		button := []int{}
+		splt := strings.Split(val[1:len(val)-1], ",")
+
+		for _, v := range splt {
+			conv, err := strconv.Atoi(v)
+			if err != nil {
+				panic(err)
+			}
+
+			button = append(button, conv)
+		}
+
+		m.buttons = append(m.buttons, button)
+	}
+
+	joltage := input[len(input)-1:][0]
+	for i, v := range strings.Split(joltage[1:len(joltage)-1], ",") {
+		conv, err := strconv.Atoi(v)
+		if err != nil {
+			panic(err)
+		}
+
+		m.joltage[i] = conv
+	}
+}
+
+func (m *JoltageManual) findShortestJoltage() int {
+	iter := 0
+
+	currentSettings := map[[12]int][12]int{}
+	currentSettings[[12]int{}] = [12]int{}
+
+	for {
+		iter++
+		newSettings := map[[12]int][12]int{}
+		for _, sett := range currentSettings {
+
+			for _, button := range m.buttons {
+				settClone := sett
+				increaseOnIndexes(&settClone, &button)
+
+				if isSameAsRequired(&m.joltage, &settClone) {
+					return iter
+				}
+
+				if validForReq(&m.joltage, &settClone) {
+					if _, ok := newSettings[settClone]; !ok {
+						newSettings[settClone] = settClone
+					}
+				}
+			}
+		}
+
+		currentSettings = newSettings
+
+		if len(currentSettings) == 0 {
+			panic("AAAAAA")
+		}
+	}
+}
+
+func increaseOnIndexes(dest *[12]int, indexes *[]int) {
+	for _, v := range *indexes {
+		dest[v]++
+	}
+}
+
+func isSameAsRequired(requ, toValidate *[12]int) bool {
+	for i, v := range requ {
+		if toValidate[i] != v {
+			return false
+		}
+	}
+
+	return true
+}
+
+func validForReq(requ, toValidate *[12]int) bool {
+	for i, v := range requ {
+		if toValidate[i] > v {
+			return false
+		}
+	}
+
+	return true
+}
+
+func Day10Part02() {
+	input := utils.ReadLines(10, false)
+	result := 0
+
+	for _, l := range input {
+		fields := strings.Fields(l)
+
+		manual := JoltageManual{}
+
+		manual.readInputForJoltage(fields)
+		result += manual.findShortestJoltage()
+	}
+
+	fmt.Println(result)
+}
