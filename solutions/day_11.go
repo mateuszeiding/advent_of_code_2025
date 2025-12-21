@@ -42,31 +42,45 @@ func Day11Part01() {
 }
 
 type Debugger struct {
-	fft      bool
-	dac      bool
-	curr     string
-	quantity int
+	fft  bool
+	dac  bool
+	curr string
+	key  string
 }
 
 func (d Debugger) new(v string) Debugger {
-	return Debugger{
-		fft:      d.fft,
-		dac:      d.dac,
-		curr:     v,
-		quantity: d.quantity,
+	// newPath := d.path
+	// newPath = append(newPath, v)
+	new := Debugger{
+		fft:  d.fft,
+		dac:  d.dac,
+		curr: v,
+		key:  d.key + v,
+		// path: newPath,
 	}
+
+	if !new.fft && new.curr == "fft" {
+		new.fft = true
+	}
+
+	if !new.dac && new.curr == "dac" {
+		new.dac = true
+	}
+
+	return new
 }
 
 func Day11Part02() {
 	input := utils.ReadLinesDiffPt2Test(11, false)
 	devicesMap := map[string][]string{}
 	whereAmI := map[string]Debugger{}
-	whereAmI["svr"] = Debugger{
-		fft:      false,
-		dac:      false,
-		curr:     "svr",
-		quantity: 1,
+	start := Debugger{
+		fft:  false,
+		dac:  false,
+		curr: "svr",
+		key:  "svr",
 	}
+	whereAmI[start.key] = start
 
 	for _, l := range input {
 		split := strings.Split(l, ":")
@@ -76,38 +90,32 @@ func Day11Part02() {
 		devicesMap[key] = values
 	}
 
+	done := []Debugger{}
 	count := 0
 	for len(whereAmI) != 0 {
 		newPaths := map[string]Debugger{}
 		for _, v := range whereAmI {
-			outputs := devicesMap[v.curr]
-
-			if slices.Contains(outputs, "fft") {
-				v.fft = true
-			}
-			if slices.Contains(outputs, "dac") {
-				v.dac = true
-			}
-
-			if slices.Contains(outputs, "out") {
-				if v.fft && v.dac {
-					count++
-				}
+			if v.curr == "out" {
+				done = append(done, v)
 				continue
 			}
-
-			for _, pth := range outputs {
-				if entry, ok := newPaths[pth]; ok {
-					entry.quantity++
-					newPaths[pth] = entry
-				} else {
-					new := v.new(pth)
-					newPaths[pth] = new
-				}
+			// fmt.Println(v)
+			// fmt.Println(outputs)
+			for _, pth := range devicesMap[v.curr] {
+				new := v.new(pth)
+				newPaths[new.key] = new
 			}
 		}
+		// fmt.Println("---")
 
+		fmt.Println(len(newPaths))
 		whereAmI = newPaths
+	}
+
+	for _, v := range done {
+		if v.fft && v.dac {
+			count++
+		}
 	}
 
 	fmt.Println(count)
