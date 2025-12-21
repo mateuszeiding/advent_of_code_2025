@@ -7,22 +7,22 @@ import (
 	"strings"
 )
 
-type Manual struct {
-	expected   int16
-	joltageReq string
-	buttons    []int16
+type SettingsManual struct {
+	expected int16
+	buttons  []int16
 }
 
-func (m *Manual) readInput(input []string) {
-	m.joltageReq = input[len(input)-1:][0]
+func (m *SettingsManual) readInputForSettings(input []string) {
+	battery := input[0]
+	input = input[1 : len(input)-1]
 
-	for i, part := range input[0] {
+	for i, part := range battery[1:] {
 		if part == '#' {
 			m.expected = m.expected | 1<<i
 		}
 	}
 
-	for _, val := range input[1 : len(input)-1] {
+	for _, val := range input {
 		var newNum int16 = 0
 		splt := strings.Split(val, "")
 
@@ -39,7 +39,7 @@ func (m *Manual) readInput(input []string) {
 	}
 }
 
-func (m *Manual) findShortest() int {
+func (m *SettingsManual) findShortestSetting() int {
 	iter := 0
 
 	currentSettings := []int16{0}
@@ -73,10 +73,10 @@ func Day10Part01() {
 	for _, l := range input {
 		fields := strings.Fields(l)
 
-		manual := Manual{}
+		manual := SettingsManual{}
 
-		manual.readInput(fields)
-		result += manual.findShortest()
+		manual.readInputForSettings(fields)
+		result += manual.findShortestSetting()
 	}
 
 	fmt.Println(result)
